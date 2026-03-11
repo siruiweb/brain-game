@@ -1,0 +1,24 @@
+/**
+ * 🧠 Brain Agent - 头脑特工队
+ * Project: VALHALLA
+ * 
+ * 技术栈: Cocos Creator 3.8.x / HTML5
+ * Language: JavaScript ES6+
+ */
+
+module.exports = {
+    // ==================== 项目信息 ====================
+    project: {
+        name: { zh: "头脑特工队", en: "Brain Agent" },
+        codename: "VALHALLA",
+        version: "1.1.0",
+        codename_v: "VALHALLA-II"
+    },
+
+    // ==================== 技术栈 ====================
+    tech: {
+        engine: "Cocos Creator 3.8.x",
+        language: "JavaScript ES6+",
+        platform: ["Web Mobile", "Web Desktop", "iOS", "Android"]
+    }
+};
