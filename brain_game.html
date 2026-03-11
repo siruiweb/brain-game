@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 Brain Agent - 头脑特工队</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #0f0f23;
+            --secondary: #1a1a3e;
+            --accent: #4ecdc4;
+            --accent2: #ff6b9d;
+            --accent3: #a855f7;
+            --accent4: #fbbf24;
+            --text: #ffffff;
+            --text-dim: #888;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', sans-serif;
+            background: var(--primary);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at 20% 20%, rgba(78,205,196,0.15) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 80%, rgba(255,107,157,0.1) 0%, transparent 50%);
+            z-index: 0;
+        }
+
+        .app {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page {
+            display: none;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        /* 菜单页 */
+        #menuPage {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .title { font-size: 36px; font-weight: bold; margin-bottom: 10px; }
+        .subtitle { font-size: 16px; color: var(--text-dim); margin-bottom: 40px; }
+
+        .btn {
+            padding: 18px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent3));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: var(--text);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn:hover { transform: translateY(-3px); }
+
+        /* 语言切换 */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .lang-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--accent);
+            border-radius: 20px;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .lang-btn:hover { background: var(--accent); color: white; }
+
+        /* 天赋选择 */
+        .talent-title { font-size: 24px; text-align: center; margin-bottom: 20px; }
+        
+        .talent-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .talent-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .talent-card:hover { background: rgba(255,255,255,0.1); border-color: var(--accent); }
+        .talent-card.selected { border-color: var(--accent4); background: rgba(251,191,36,0.1); }
+
+        .talent-icon { font-size: 40px; margin-bottom: 10px; }
+        .talent-name { font-size: 16px; font-weight: bold; margin-bottom: 5px; }
+        .talent-desc { font-size: 12px; color: var(--text-dim); }
+
+        /* 游戏头部 */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .day-badge {
+            background: linear-gradient(135deg, var(--accent), var(--accent3));
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .stats-row { display: flex; gap: 15px; }
+        .stat-item { font-size: 14px; }
+
+        /* 属性条 */
+        .attr-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .panel {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 15px;
+        }
+
+        .panel-title { font-size: 18px; margin-bottom: 15px; }
+
+        .attr-list { display: flex; flex-direction: column; gap: 10px; }
+        .attr-item { display: flex; align-items: center; gap: 10px; }
+        .attr-icon { font-size: 20px; width: 30px; }
+        .attr-bar { flex: 1; height: 12px; background: rgba(0,0,0,0.3); border-radius: 6px; overflow: hidden; }
+        .attr-fill { height: 100%; border-radius: 6px; transition: width 0.5s; }
+        .attr-value { width: 40px; text-align: right; font-size: 12px; font-weight: bold; }
+
+        .fill-joy { background: linear-gradient(90deg, #ffd93d, #ff9500); }
+        .fill-anger { background: linear-gradient(90deg, #ff6b6b, #ff0000); }
+        .fill-sad { background: linear-gradient(90deg, #6c5ce7, #4a00e0); }
+        .fill-fear { background: linear-gradient(90deg, #a29bfe, #6c5ce7); }
+        .fill-love { background: linear-gradient(90deg, #fd79a8, #e84393); }
+        .fill-food { background: linear-gradient(90deg, #e17055, #d63031); }
+        .fill-money { background: linear-gradient(90deg, #fdcb6e, #f39c12); }
+        .fill-fame { background: linear-gradient(90deg, #74b9ff, #0984e3); }
+        .fill-sleep { background: linear-gradient(90deg, #a29bfe, #6c5ce7); }
+        .fill-play { background: linear-gradient(90deg, #55efc4, #00b894); }
+
+        /* 行动区 */
+        .action-tabs { display: flex; gap: 10px; margin-bottom: 15px; overflow-x: auto; }
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            color: var(--text);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .tab-btn.active { background: linear-gradient(135deg, var(--accent), var(--accent3)); }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 15px 10px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .action-btn:hover { background: rgba(78,205,196,0.2); }
+        .action-btn .cost { display: block; font-size: 11px; color: var(--accent4); margin-top: 5px; }
+
+        /* 计时器 */
+        .timer-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin: 10px 0; }
+        .timer-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 1s; }
+
+        /* 日志 */
+        .log-list {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .log-item { font-size: 12px; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 5px; }
+
+        /* 成就 */
+        .achievements { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
+        .achievement {
+            padding: 5px 10px;
+            background: var(--accent4);
+            border-radius: 15px;
+            font-size: 11px;
+            color: #000;
+            font-weight: bold;
+        }
+
+        /* 游戏结束 */
+        .game-over {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 200;
+        }
+        .game-over.show { display: flex; }
+        .game-over-icon { font-size: 80px; margin-bottom: 20px; }
+        .game-over-title { font-size: 40px; margin-bottom: 15px; }
+        .game-over-title.fail { color: #ef4444; }
+        .game-over-title.win { color: var(--accent4); }
+        .game-over-stats { font-size: 18px; color: var(--text-dim); }
+
+        @media (max-width: 600px) {
+            .talent-grid { grid-template-columns: 1fr; }
+            .attr-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg"></div>
+    
+    <div class="lang-switch">
+        <button class="lang-btn" onclick="toggleLang()">🌐 <span id="langText">EN/中</span></button>
+    </div>
+
+    <div class="app">
+        <!-- 菜单页 -->
+        <div class="page active" id="menuPage">
+            <div class="logo">🧠</div>
+            <div class="title" id="gameTitle">头脑特工队</div>
+            <div class="subtitle" id="gameSubtitle">Brain Agent - VALHALLA-II</div>
+            <div>
+                <button class="btn btn-primary" onclick="showTalentPage()" id="btnNewGame">新游戏</button>
+                <button class="btn btn-secondary" onclick="continueGame()" id="btnContinue">继续游戏</button>
+            </div>
+        </div>
+
+        <!-- 天赋页 -->
+        <div class="page" id="talentPage">
+            <div class="talent-title" id="talentTitle">选择天赋 Select Talent</div>
+            <div class="talent-grid" id="talentGrid"></div>
+            <button class="btn btn-primary" style="margin: 20px auto; display: block;" onclick="startGame()" id="btnStart">开始游戏 Start</button>
+        </div>
+
+        <!-- 游戏页 -->
+        <div class="page" id="gamePage">
+            <div class="game-header">
+                <div class="day-badge" id="dayBadge">第1天</div>
+                <div class="stats-row">
+                    <span class="stat-item">❤️ <span id="healthVal">100</span></span>
+                    <span class="stat-item">🧠 <span id="mentalVal">100</span></span>
+                    <span class="stat-item">⚡ <span id="energyVal">100</span></span>
+                    <span class="stat-item">💰 <span id="moneyVal">1000</span></span>
+                </div>
+            </div>
+
+            <div class="timer-bar">
+                <div class="timer-fill" id="timerFill" style="width: 100%;"></div>
+            </div>
+
+            <div class="attr-grid">
+                <div class="panel">
+                    <div class="panel-title" id="emotionsTitle">😤 情绪 Emotions</div>
+                    <div class="attr-list" id="emotionList"></div>
+                    <div class="panel-title" style="margin-top: 20px;" id="desiresTitle">🍚 欲望 Desires</div>
+                    <div class="attr-list" id="desireList"></div>
+                    <div class="achievements" id="achievements"></div>
+                </div>
+
+                <div class="panel">
+                    <div class="action-tabs" id="actionTabs"></div>
+                    <div class="action-grid" id="actionGrid"></div>
+                    <div class="panel-title" style="margin-top: 15px;">📜 日志 Log</div>
+                    <div class="log-list" id="logList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 游戏结束 -->
+    <div class="game-over" id="gameOver">
+        <div class="game-over-icon" id="goIcon">💀</div>
+        <div class="game-over-title" id="goTitle">游戏结束</div>
+        <div class="game-over-stats" id="goStats"></div>
+        <div style="margin-top: 30px;">
+            <button class="btn btn-primary" onclick="restartGame()">再来一次 Restart</button>
+            <button class="btn btn-secondary" onclick="goToMenu()">菜单 Menu</button>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 国际化 ====================
+        let L = {};
+        
+        const i18n = {
+            // 菜单
+            newGame: { zh: "新游戏", en: "New Game" },
+            continue: { zh: "继续游戏", en: "Continue" },
+            gameTitle: { zh: "头脑特工队", en: "Brain Agent" },
+            gameSubtitle: { zh: "VALHALLA-II", en: "VALHALLA-II" },
+            
+            // 天赋
+            talentTitle: { zh: "选择天赋 Select Talent", en: "Select Talent" },
+            start: { zh: "开始游戏 Start", en: "Start Game" },
+            
+            // 属性
+            day: { zh: "第{0}天", en: "Day {0}" },
+            emotions: { zh: "😤 情绪", en: "😤 Emotions" },
+            desires: { zh: "🍚 欲望", en: "🍚 Desires" },
+            
+            // 情绪
+            joy: { zh: "喜", en: "Joy" },
+            anger: { zh: "怒", en: "Anger" },
+            sad: { zh: "哀", en: "Sad" },
+            fear: { zh: "惧", en: "Fear" },
+            love: { zh: "爱", en: "Love" },
+            hate: { zh: "恶", en: "Hate" },
+            
+            // 欲望
+            food: { zh: "食欲", en: "Food" },
+            money: { zh: "财欲", en: "Money" },
+            fame: { zh: "名欲", en: "Fame" },
+            sleep: { zh: "睡欲", en: "Sleep" },
+            play: { zh: "玩欲", en: "Play" },
+            
+            // 行动分类
+            tab_emotions: { zh: "情绪", en: " Emotions" },
+            tab_desires: { zh: "欲望", en: " Desires" },
+            tab_social: { zh: "社交", en: " Social" },
+            tab_health: { zh: "健康", en: " Health" },
+            
+            // 游戏结束
+            gameOver: { zh: "游戏结束", en: "Game Over" },
+            win: { zh: "通关成功!", en: "You Win!" },
+            days: { zh: "存活: {0}天", en: "Survived: {0} days" },
+            
+            // 原因
+            health_dead: { zh: "身体垮掉了!", en: "Health depleted!" },
+            mental_dead: { zh: "心理崩溃了!", en: "Mental breakdown!" },
+            energy_dead: { zh: "累死了!", en: "Exhausted!" },
+            angry_dead: { zh: "气死了!", en: "Died of anger!" },
+            sad_dead: { zh: "抑郁死了!", en: "Died of sadness!" },
+            poor_dead: { zh: "穷死了!", en: "Died of poverty!" }
+        };
+
+        let lang = localStorage.getItem('brainGame_lang') || 'zh';
+
+        function tr(key) {
+            return i18n[key] ? (i18n[key][lang] || i18n[key].zh || key) : key;
+        }
+
+        function toggleLang() {
+            lang = lang === 'zh' ? 'en' : 'zh';
+            localStorage.setItem('brainGame_lang', lang);
+            updateAllText();
+        }
+
+        function updateAllText() {
+            document.getElementById('gameTitle').innerText = tr('gameTitle');
+            document.getElementById('gameSubtitle').innerText = tr('gameSubtitle');
+            document.getElementById('btnNewGame').innerText = tr('newGame');
+            document.getElementById('btnContinue').innerText = tr('continue');
+            document.getElementById('talentTitle').innerText = tr('talentTitle');
+            document.getElementById('btnStart').innerText = tr('start');
+            document.getElementById('emotionsTitle').innerText = tr('emotions');
+            document.getElementById('desiresTitle').innerText = tr('desires');
+            renderTalents();
+            renderActions('emotions');
+            renderStats();
+        }
+
+        // ==================== 游戏数据 ====================
+        let game = {
+            day: 1, chapter: 1,
+            health: 100, mental: 100, energy: 100, money: 1000,
+            talent: null, countdown: 30,
+            achievements: [],
+            emotions: { joy: 50, anger: 30, sad: 30, fear: 20, love: 60, hate: 25 },
+            desires: { food: 60, money: 70, fame: 50, sleep: 55, play: 65 },
+            history: [], timer: null
+        };
+
+        const talents = {
+            lucky: { icon: "🌟", name: { zh: "天选之人", en: "Lucky Star" }, desc: { zh: "正面效果+10%", en: "Effects +10%" } },
+            rich: { icon: "🏠", name: { zh: "富二代", en: "Rich Kid" }, desc: { zh: "初始金钱+5000", en: "Money +5000" } },
+            genius: { icon: "🧠", name: { zh: "天才", en: "Genius" }, desc: { zh: "学习效率+20%", en: "Learn +20%" } },
+            healthy: { icon: "💪", name: { zh: "体育健将", en: "Athlete" }, desc: { zh: "健康上限+20", en: "Max Health +20" } },
+            charmer: { icon: "💕", name: { zh: "万人迷", en: "Charmer" }, desc: { zh: "魅力+20%", en: "Charm +20%" } },
+            zen: { icon: "🧘", name: { zh: "禅师", en: "Zen Master" }, desc: { zh: "负面效果-20%", en: "Negative -20%" } },
+            gambler: { icon: "🎰", name: { zh: "赌徒", en: "Gambler" }, desc: { zh: "投资回报+30%", en: "Invest +30%" } }
+        };
+
+        const emotions = [
+            { key: "joy", icon: "😄", cls: "fill-joy" },
+            { key: "anger", icon: "😤", cls: "fill-anger" },
+            { key: "sad", icon: "😢", cls: "fill-sad" },
+            { key: "fear", icon: "😰", cls: "fill-fear" },
+            { key: "love", icon: "❤️", cls: "fill-love" }
+        ];
+
+        const desires = [
+            { key: "food", icon: "🍔", cls: "fill-food" },
+            { key: "money", icon: "💰", cls: "fill-money" },
+            { key: "fame", icon: "🏆", cls: "fill-fame" },
+            { key: "sleep", icon: "😴", cls: "fill-sleep" },
+            { key: "play", icon: "🎮", cls: "fill-play" }
+        ];
+
+        const actions = {
+            emotions: [
+                { n: { zh: "💰 赚钱", en: "💰 Earn Money" }, c: 0, e: { joy: 15, money: 30, sleep: -5 } },
+                { n: { zh: "🎮 玩游戏", en: "🎮 Play Games" }, c: 10, e: { joy: 20, play: 15, money: -10, sleep: -5 } },
+                { n: { zh: "🏋️ 健身", en: "🏋️ Exercise" }, c: 20, e: { anger: -20, health: 10, energy: -10 } },
+                { n: { zh: "🧘 冥想", en: "🧘 Meditate" }, c: 0, e: { anger: -25, mental: 15, sleep: 5 } },
+                { n: { zh: "😢 哭一场", en: "😢 Cry" }, c: 0, e: { sad: -15, mental: 5 } },
+                { n: { zh: "🍔 美食", en: "🍔 Good Food" }, c: 30, e: { sad: -10, food: 25, money: -30, joy: 10 } },
+                { n: { zh: "❤️ 告白", en: "❤️ Confess" }, c: 0, e: { love: 25, joy: 20, fear: 15 } },
+                { n: { zh: "💕 约会", en: "💕 Date" }, c: 100, e: { love: 30, money: -100, joy: 25 } }
+            ],
+            desires: [
+                { n: { zh: "🍔 吃饭", en: "🍔 Eat" }, c: 20, e: { food: 35, joy: 10, money: -20, health: 5 } },
+                { n: { zh: "💵 省钱", en: "💵 Save" }, c: 0, e: { money: 20, joy: 5 } },
+                { n: { zh: "💼 工作", en: "💼 Work" }, c: 0, e: { money: 100, energy: -30 } },
+                { n: { zh: "🏆 比赛", en: "🏆 Contest" }, c: 30, e: { fame: 30, joy: 25, money: -30 } },
+                { n: { zh: "😴 睡觉", en: "😴 Sleep" }, c: 0, e: { sleep: 50, energy: 40, health: 10 } },
+                { n: { zh: "🎮 玩", en: "🎮 Play" }, c: 20, e: { play: 35, joy: 25, money: -20, sleep: -10 } },
+                { n: { zh: "✈️ 旅游", en: "✈️ Travel" }, c: 500, e: { play: 50, joy: 40, money: -500, energy: -20 } }
+            ],
+            social: [
+                { n: { zh: "👥 交友", en: "👥 Friends" }, c: 0, e: { joy: 15 } },
+                { n: { zh: "🎂 聚会", en: "🎂 Party" }, c: 50, e: { joy: 30, money: -50 } },
+                { n: { zh: "🎁 送礼", en: "🎁 Gift" }, c: 50, e: { money: -50 } }
+            ],
+            health: [
+                { n: { zh: "🏃 跑步", en: "🏃 Jog" }, c: 0, e: { health: 15, energy: -15, joy: 10 } },
+                { n: { zh: "🧘 瑜伽", en: "🧘 Yoga" }, c: 20, e: { health: 10, mental: 15 } },
+                { n: { zh: "🏥 看病", en: "🏥 Doctor" }, c: 50, e: { health: 30, money: -50 } }
+            ]
+        };
+
+        const events = [
+            { t: { zh: "🌧️ 下雨天...", en: "🌧️ Rainy..." }, e: { sad: 10, joy: -5 } },
+            { t: { zh: "☀️ 阳光好!", en: "☀️ Sunny!" }, e: { joy: 10, sad: -5 } },
+            { t: { zh: "💼 工作累!", en: "💼 Work hard!" }, e: { anger: 10, sleep: -10 } },
+            { t: { zh: "🎂 生日!", en: "🎂 Birthday!" }, e: { joy: 15, money: -10 } },
+            { t: { zh: "🐔 被骗!", en: "🐔 Scammed!" }, e: { money: -20, anger: 15 } },
+            { t: { zh: "💪 健身!", en: "💪 Fit!" }, e: { joy: 10, health: 10 } },
+            { t: { zh: "📱 手机坏!", en: "📱 Phone broken!" }, e: { anger: 20, money: -10 } },
+            { t: { zh: "💔 分手!", en: "💔 Break up!" }, e: { love: -30, sad: 25, mental: -15 } },
+            { t: { zh: "🎉 中奖!", en: "🎉 Win!" }, e: { joy: 35, money: 500 } },
+            { t: { zh: "📚 读书!", en: "📚 Read!" }, e: { joy: 10 } },
+            { t: { zh: "😴 失眠!", en: "😴 Insomnia!" }, e: { sleep: -25, energy: -15 } },
+            { t: { zh: "🤒 生病!", en: "🤒 Sick!" }, e: { health: -20, money: -50 } }
+        ];
+
+        // ==================== 页面 ====================
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function showTalentPage() { showPage('talentPage'); renderTalents(); }
+        function goToMenu() { showPage('menuPage'); }
+
+        // ==================== 天赋 ====================
+        function renderTalents() {
+            const grid = document.getElementById('talentGrid');
+            grid.innerHTML = Object.entries(talents).map(([key, t]) => `
+                <div class="talent-card" data-key="${key}" onclick="selectTalent('${key}')">
+                    <div class="talent-icon">${t.icon}</div>
+                    <div class="talent-name">${lang === 'zh' ? t.name.zh : t.name.en}</div>
+                    <div class="talent-desc">${lang === 'zh' ? t.desc.zh : t.desc.en}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectTalent(key) {
+            document.querySelectorAll('.talent-card').forEach(c => c.classList.remove('selected'));
+            document.querySelector(`[data-key="${key}"]`).classList.add('selected');
+            game.talent = key;
+        }
+
+        // ==================== 游戏 ====================
+        function startGame() {
+            if (!game.talent) { alert(lang === 'zh' ? '请选择天赋!' : 'Select a talent!'); return; }
+            if (game.talent === 'rich') game.money += 5000;
+            if (game.talent === 'healthy') game.health = 120;
+
+            game.day = 1; game.chapter = 1; game.countdown = 30;
+            game.achievements = []; game.history = [];
+
+            showPage('gamePage');
+            renderStats();
+            renderActions('emotions');
+            startGameLoop();
+            addLog(lang === 'zh' ? '🎮 游戏开始!' : '🎮 Game Start!');
+        }
+
+        function continueGame() {
+            const saved = localStorage.getItem('brainGameSave');
+            if (saved) {
+                Object.assign(game, JSON.parse(saved));
+                showPage('gamePage');
+                renderStats();
+                startGameLoop();
+                addLog(lang === 'zh' ? '📂 继续游戏...' : '📂 Loading...');
+            } else {
+                alert(lang === 'zh' ? '没有存档!' : 'No save found!');
+            }
+        }
+
+        function startGameLoop() {
+            if (game.timer) clearInterval(game.timer);
+            game.timer = setInterval(() => tick(), 1000);
+        }
+
+        function tick() {
+            game.countdown--;
+            if (game.countdown <= 0) {
+                triggerRandomEvent();
+                nextDay();
+                game.countdown = 30;
+            }
+            document.getElementById('timerFill').style.width = (game.countdown / 30 * 100) + '%';
+        }
+
+        function nextDay() {
+            game.day++;
+            game.emotions.joy = clamp(game.emotions.joy - 2, 0, 100);
+            game.desires.food = clamp(game.desires.food - 5, 0, 100);
+            game.desires.sleep = clamp(game.desires.sleep - 8, 0, 100);
+            game.energy = clamp(game.energy + 10, 0, 100);
+
+            if (game.day >= 30 && game.chapter < 2) { game.chapter = 2; addLog('📖 ' + (lang === 'zh' ? '进入第2章 职场新人' : 'Ch2 Workplace')); }
+            if (game.day >= 60 && game.chapter < 3) { game.chapter = 3; addLog('📖 ' + (lang === 'zh' ? '进入第3章 创业之路' : 'Ch3 Startup')); }
+            if (game.day >= 100 && game.chapter < 4) { game.chapter = 4; addLog('📖 ' + (lang === 'zh' ? '进入第4章 人生巅峰' : 'Ch4 Peak')); }
+            if (game.day >= 200 && game.chapter < 5) { game.chapter = 5; addLog('📖 ' + (lang === 'zh' ? '进入第5章 传奇人生' : 'Ch5 Legend')); }
+
+            checkAchievements();
+            checkGameOver();
+            saveGame();
+        }
+
+        function performAction(action, index, tab) {
+            if (game.money < action.c) {
+                addLog(lang === 'zh' ? '💸 金钱不足!' : '💸 Not enough money!');
+                return;
+            }
+            game.money -= action.c;
+            applyEffects(action.e);
+            addLog(`📅 ${lang === 'zh' ? '第'+game.day+'天' : 'Day '+game.day} - ${lang === 'zh' ? action.n.zh : action.n.en}`);
+            checkAchievements();
+            checkGameOver();
+            renderStats();
+        }
+
+        function applyEffects(effects) {
+            for (let key in effects) {
+                const val = effects[key];
+                if (key in game.emotions) game.emotions[key] = clamp(game.emotions[key] + val, 0, 100);
+                else if (key in game.desires) game.desires[key] = clamp(game.desires[key] + val, 0, 100);
+                else if (key === 'money') game.money = Math.max(0, game.money + val);
+                else if (key === 'health') game.health = clamp(game.health + val, 0, 120);
+                else if (key === 'mental') game.mental = clamp(game.mental + val, 0, 100);
+                else if (key === 'energy') game.energy = clamp(game.energy + val, 0, 100);
+                else if (key === 'joy') game.emotions.joy = clamp(game.emotions.joy + val, 0, 100);
+            }
+        }
+
+        function triggerRandomEvent() {
+            if (Math.random() > 0.4) return;
+            const evt = events[Math.floor(Math.random() * events.length)];
+            applyEffects(evt.e);
+            addLog(`📅 ${lang === 'zh' ? '第'+game.day+'天' : 'Day '+game.day} - ${lang === 'zh' ? evt.t.zh : evt.t.en}`);
+        }
+
+        // ==================== UI ====================
+        function renderStats() {
+            document.getElementById('dayBadge').innerText = (lang === 'zh' ? '第' : 'Day ') + game.day;
+            document.getElementById('healthVal').innerText = Math.round(game.health);
+            document.getElementById('mentalVal').innerText = Math.round(game.mental);
+            document.getElementById('energyVal').innerText = Math.round(game.energy);
+            document.getElementById('moneyVal').innerText = game.money;
+
+            // 情绪
+            document.getElementById('emotionList').innerHTML = emotions.map(e => `
+                <div class="attr-item">
+                    <span class="attr-icon">${e.icon}</span>
+                    <div class="attr-bar"><div class="attr-fill ${e.cls}" style="width: ${game.emotions[e.key]}%"></div></div>
+                    <span class="attr-value">${game.emotions[e.key]}</span>
+                </div>
+            `).join('');
+
+            // 欲望
+            document.getElementById('desireList').innerHTML = desires.map(d => `
+                <div class="attr-item">
+                    <span class="attr-icon">${d.icon}</span>
+                    <div class="attr-bar"><div class="attr-fill ${d.cls}" style="width: ${game.desires[d.key]}%"></div></div>
+                    <span class="attr-value">${game.desires[d.key]}</span>
+                </div>
+            `).join('');
+
+            // 成就
+            const achIcons = { day10: '🌱', day30: '🌿', day100: '🌳', day365: '👑', money1k: '💵', money10k: '💰', rich: '👑', health100: '💪' };
+            document.getElementById('achievements').innerHTML = game.achievements.map(a => 
+                `<span class="achievement">${achIcons[a] || '🏆'}</span>`
+            ).join('');
+        }
+
+        function renderActions(tab) {
+            const tabs = [
+                { id: 'emotions', label: '😤' },
+                { id: 'desires', label: '🍚' },
+                { id: 'social', label: '🎭' },
+                { id: 'health', label: '💪' }
+            ];
+            
+            document.getElementById('actionTabs').innerHTML = tabs.map(t => `
+                <button class="tab-btn ${tab===t.id?'active':''}" onclick="renderActions('${t.id}')">${t.label}</button>
+            `).join('');
+
+            document.getElementById('actionGrid').innerHTML = (actions[tab] || []).map((a, i) => `
+                <button class="action-btn" onclick="performAction(actions.${tab}[${i}], ${i}, '${tab}')">
+                    ${lang === 'zh' ? a.n.zh : a.n.en}
+                    <span class="cost">💰 ${a.c}</span>
+                </button>
+            `).join('');
+        }
+
+        function addLog(text) {
+            const list = document.getElementById('logList');
+            const item = document.createElement('div');
+            item.className = 'log-item';
+            item.innerText = text;
+            list.insertBefore(item, list.firstChild);
+            while (list.children.length > 20) list.removeChild(list.lastChild);
+            game.history.unshift(text);
+        }
+
+        function checkAchievements() {
+            const checks = [
+                ['day10', game.day >= 10], ['day30', game.day >= 30], ['day100', game.day >= 100], ['day365', game.day >= 365],
+                ['money1k', game.money >= 1000], ['money10k', game.money >= 10000], ['rich', game.money >= 10000000], ['health100', game.health >= 100]
+            ];
+            checks.forEach(([key, cond]) => {
+                if (cond && !game.achievements.includes(key)) {
+                    game.achievements.push(key);
+                    addLog('🏆 ' + (lang === 'zh' ? '成就解锁!' : 'Achievement!'));
+                }
+            });
+            renderStats();
+        }
+
+        function checkGameOver() {
+            let reason = '', isWin = false;
+            if (game.health <= 0) reason = lang === 'zh' ? '身体垮掉了!' : 'Health depleted!';
+            else if (game.mental <= 0) reason = lang === 'zh' ? '心理崩溃了!' : 'Mental breakdown!';
+            else if (game.energy <= 0) reason = lang === 'zh' ? '累死了!' : 'Exhausted!';
+            else if (game.emotions.anger > 95) reason = lang === 'zh' ? '气死了!' : 'Died of anger!';
+            else if (game.emotions.sad > 95) reason = lang === 'zh' ? '抑郁死了!' : 'Died of sadness!';
+            else if (game.money <= 0 && game.day > 10) reason = lang === 'zh' ? '穷死了!' : 'Died poor!';
+            else if (game.day >= 365) { isWin = true; reason = lang === 'zh' ? '通关成功!' : 'You Win!'; }
+
+            if (reason) {
+                clearInterval(game.timer);
+                document.getElementById('gameOver').classList.add('show');
+                document.getElementById('goIcon').innerText = isWin ? '🎉' : '💀';
+                document.getElementById('goTitle').innerText = isWin ? (lang === 'zh' ? '通关成功!' : 'You Win!') : (lang === 'zh' ? '游戏结束' : 'Game Over');
+                document.getElementById('goTitle').className = 'game-over-title ' + (isWin ? 'win' : 'fail');
+                document.getElementById('goStats').innerText = reason + ' ' + (lang === 'zh' ? '存活' : 'Survived: ') + game.day + (lang === 'zh' ? '天' : ' days');
+            }
+        }
+
+        function restartGame() {
+            document.getElementById('gameOver').classList.remove('show');
+            game = { day: 1, chapter: 1, health: 100, mental: 100, energy: 100, money: 1000, talent: null, countdown: 30, achievements: [], emotions: { joy: 50, anger: 30, sad: 30, fear: 20, love: 60, hate: 25 }, desires: { food: 60, money: 70, fame: 50, sleep: 55, play: 65 }, history: [], timer: null };
+            showTalentPage();
+        }
+
+        function saveGame() {
+            localStorage.setItem('brainGameSave', JSON.stringify(game));
+        }
+
+        function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+        // 初始化
+        updateAllText();
+    </script>
+</body>
+</html>
