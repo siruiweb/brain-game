@@ -1,6 +1,35 @@
 # 🧠 头脑特工队
 
-**Project: VALHALLA** | 人生365天模拟游戏
+---
+
+## 📋 项目命名规范
+
+### 对外（发布用）
+| 属性 | 名称 |
+|------|------|
+| **产品名称** | 头脑特工队 |
+| **版本名称** | VALHALLA-I |
+| **Slogan** | 掌控情绪，书写人生 |
+
+### 对内（开发用）
+| 属性 | 名称 |
+|------|------|
+| **项目代号** | Project: VALHALLA |
+| **内部版本号** | v1.0.0-alpha |
+| **开发代号** | VALHALLA-I |
+
+---
+
+## 📅 版本规划
+
+| 版本 | 代号 | 状态 | 说明 |
+|------|------|------|------|
+| v1.0.0 | VALHALLA-I | ✅ 完成 | 初版发布 |
+| v1.1.0 | VALHALLA-II | 🔄 开发中 | 增加社交系统 |
+| v2.0.0 | VALHALLA-PRO | 📋 规划 | 专业版 |
+| v3.0.0 | VALHALLA-ULTIMATE | 📋 规划 | 终极版 |
+
+---
 
 ## 🎮 游戏介绍
 
@@ -31,27 +60,12 @@
 
 ## 🚀 如何运行
 
-### 方法1: 直接运行HTML版本
 直接用浏览器打开 `brain_game.html` 即可游玩
-
-### 方法2: Cocos Creator项目
-用 Cocos Creator 2.4.x 打开项目目录，构建发布
-
-## 📁 文件说明
-
-- `brain_game.html` - 完整版HTML游戏（直接可玩）
-- `GameManager.js` - Cocos游戏主逻辑
-- `GameCore.js` - 游戏核心数据配置
 
 ## 🛠️ 技术栈
 
-- Cocos Creator 2.4.x
+- Cocos Creator 2.4.x / HTML5
 - JavaScript (ES6)
-- HTML5/CSS3
-
-## 📝 版本
-
-- **VALHALLA-I** (v1.0.0) - 初版发布
 
 ---
 
