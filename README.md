@@ -1,6 +1,6 @@
-# 🧠 七情六欲大脑模拟器
+# 🧠 头脑特工队
 
-人生365天 - 精品版游戏
+**Project: VALHALLA** | 人生365天模拟游戏
 
 ## 🎮 游戏介绍
 
@@ -32,15 +32,14 @@
 ## 🚀 如何运行
 
 ### 方法1: 直接运行HTML版本
-直接用浏览器打开 `七情六欲精品版.html` 即可游玩
+直接用浏览器打开 `brain_game.html` 即可游玩
 
 ### 方法2: Cocos Creator项目
-1. 用 Cocos Creator 2.4.x 打开 `brain-simulator` 目录
-2. 构建发布到 Web Mobile
+用 Cocos Creator 2.4.x 打开项目目录，构建发布
 
 ## 📁 文件说明
 
-- `七情六欲精品版.html` - 完整版HTML游戏（直接可玩）
+- `brain_game.html` - 完整版HTML游戏（直接可玩）
 - `GameManager.js` - Cocos游戏主逻辑
 - `GameCore.js` - 游戏核心数据配置
 
@@ -50,6 +49,10 @@
 - JavaScript (ES6)
 - HTML5/CSS3
 
-## 📝 作者
+## 📝 版本
 
-AI助手小美 🎮
+- **VALHALLA-I** (v1.0.0) - 初版发布
+
+---
+
+**头脑特工队** - 掌控你的情绪，书写完美人生！
