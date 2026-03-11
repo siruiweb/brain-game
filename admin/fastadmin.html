@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastAdmin - 通用游戏后台</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Segoe UI", "Microsoft YaHei", sans-serif; background: #f0f2f5; }
+        
+        /* FastAdmin 风格 */
+        .fastadmin-navbar { background: linear-gradient(135deg, #3673e6, #5b8def); padding: 0 20px; height: 50px; display: flex; align-items: center; justify-content: space-between; }
+        .fastadmin-navbar .brand { color: white; font-size: 18px; font-weight: bold; }
+        .fastadmin-navbar .nav-link { color: rgba(255,255,255,0.8); padding: 15px; display: inline-block; }
+        .fastadmin-navbar .nav-link:hover { color: white; background: rgba(255,255,255,0.1); }
+        
+        /* 侧边栏 */
+        .fastadmin-sidebar { width: 220px; background: #2d2d2d; position: fixed; top: 50px; bottom: 0; left: 0; overflow-y: auto; }
+        .fastadmin-sidebar .nav-item { border-bottom: 1px solid #3a3a3a; }
+        .fastadmin-sidebar .nav-link { color: #ccc; padding: 12px 20px; display: block; }
+        .fastadmin-sidebar .nav-link:hover, .fastadmin-sidebar .nav-link.active { background: #3673e6; color: white; }
+        .fastadmin-sidebar .nav-link i { margin-right: 10px; width: 20px; }
+        .fastadmin-sidebar .submenu { background: #242424; display: none; }
+        .fastadmin-sidebar .submenu.show { display: block; }
+        .fastadmin-sidebar .submenu .nav-link { padding-left: 50px; font-size: 13px; }
+        
+        /* 主内容 */
+        .fastadmin-main { margin-left: 220px; margin-top: 50px; padding: 20px; }
+        
+        /* 卡片 */
+        .fastadmin-card { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .fastadmin-card .card-header { padding: 15px 20px; border-bottom: 1px solid #eee; background: #fafafa; font-weight: bold; }
+        .fastadmin-card .card-body { padding: 20px; }
+        
+        /* 统计 */
+        .stats-card { background: white; border-radius: 4px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center; }
+        .stats-card .icon { font-size: 32px; color: #3673e6; margin-bottom: 10px; }
+        .stats-card .value { font-size: 28px; font-weight: bold; color: #333; }
+        .stats-card .label { color: #888; font-size: 13px; }
+        
+        /* 表格 */
+        .table thead th { background: #f5f5f5; border-bottom: 2px solid #eee; font-weight: 600; }
+        .table td, .table th { vertical-align: middle; }
+        
+        /* 按钮 */
+        .btn-fastadmin { background: #3673e6; color: white; border: none; }
+        .btn-fastadmin:hover { background: #2a5cc6; color: white; }
+        
+        /* 标签 */
+        .badge-success { background: #28a745; }
+        .badge-warning { background: #ffc107; color: #333; }
+        .badge-danger { background: #dc3545; }
+        
+        /* 搜索 */
+        .search-bar { background: white; padding: 15px 20px; border-radius: 4px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        
+        /* 用户菜单 */
+        .user-dropdown { display: flex; align-items: center; gap: 10px; color: white; }
+        .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="fastadmin-navbar">
+        <div class="d-flex align-items-center">
+            <a class="brand" href="/admin">
+                <i class="fa fa-gavel"></i> FastAdmin
+            </a>
+            <nav class="nav">
+                <a class="nav-link" href="/"><i class="fa fa-home"></i> 前台</a>
+                <a class="nav-link" href="#"><i class="fa fa-navicon"></i> 标签</a>
+                <a class="nav-link" href="#"><i class="fa fa-refresh"></i> 刷新</a>
+                <a class="nav-link" href="#"><i class="fa fa-cloud-download"></i> 缓存</a>
+            </nav>
+        </div>
+        <div class="user-dropdown">
+            <span>超级管理员</span>
+            <div class="user-avatar"><i class="fa fa-user"></i></div>
+            <a class="nav-link" href="#" style="color:white;"><i class="fa fa-sign-out"></i> 退出</a>
+        </div>
+    </nav>
+
+    <!-- 侧边栏 -->
+    <aside class="fastadmin-sidebar">
+        <div class="nav-item">
+            <a class="nav-link active" href="#dashboard">
+                <i class="fa fa-dashboard"></i> 控制台
+            </a>
+        </div>
+        
+        <!-- 游戏管理 -->
+        <div class="nav-item">
+            <a class="nav-link" href="#game">
+                <i class="fa fa-gamepad"></i> 游戏管理
+                <i class="fa fa-angle-right pull-right"></i>
+            </a>
+            <div class="submenu">
+                <a class="nav-link" href="#games"><i class="fa fa-list"></i> 游戏列表</a>
+                <a class="nav-link" href="#game-add"><i class="fa fa-plus"></i> 添加游戏</a>
+            </div>
+        </div>
+        
+        <!-- 游戏配置 -->
+        <div class="nav-item">
+            <a class="nav-link" href="#config">
+                <i class="fa fa-cogs"></i> 游戏配置
+                <i class="fa fa-angle-right pull-right"></i>
+            </a>
+            <div class="submenu">
+                <a class="nav-link" href="#talents"><i class="fa fa-star"></i> 天赋配置</a>
+                <a class="nav-link" href="#actions"><i class="fa fa-bolt"></i> 行动配置</a>
+                <a class="nav-link" href="#chapters"><i class="fa fa-book"></i> 章节配置</a>
+                <a class="nav-link" href="#events"><i class="fa fa-dice"></i> 随机事件</a>
+                <a class="nav-link" href="#achievements"><i class="fa fa-trophy"></i> 成就配置</a>
+            </div>
+        </div>
+        
+        <!-- 玩家管理 -->
+        <div class="nav-item">
+            <a class="nav-link" href="#players">
+                <i class="fa fa-users"></i> 玩家管理
+                <i class="fa fa-angle-right pull-right"></i>
+            </a>
+            <div class="submenu">
+                <a class="nav-link" href="#player-list"><i class="fa fa-list"></i> 玩家列表</a>
+                <a class="nav-link" href="#player-gift"><i class="fa fa-gift"></i> 礼包发放</a>
+            </div>
+        </div>
+        
+        <!-- 数据统计 -->
+        <div class="nav-item">
+            <a class="nav-link" href="#stats">
+                <i class="fa fa-bar-chart"></i> 数据统计
+            </a>
+        </div>
+        
+        <!-- 系统管理 -->
+        <div class="nav-item">
+            <a class="nav-link" href="#system">
+                <i class="fa fa-cog"></i> 系统管理
+                <i class="fa fa-angle-right pull-right"></i>
+            </a>
+            <div class="submenu">
+                <a class="nav-link" href="#config-site"><i class="fa fa-globe"></i> 网站配置</a>
+                <a class="nav-link" href="#config-admin"><i class="fa fa-user-md"></i> 管理员</a>
+                <a class="nav-link" href="#config-log"><i class="fa fa-file-text"></i> 操作日志</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 主内容 -->
+    <main class="fastadmin-main">
+        <!-- 搜索栏 -->
+        <div class="search-bar">
+            <form class="form-inline">
+                <input type="text" class="form-control mr-2" placeholder="搜索..." style="width: 300px;">
+                <button type="submit" class="btn btn-fastadmin"><i class="fa fa-search"></i> 搜索</button>
+            </form>
+        </div>
+
+        <!-- 统计 -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="icon"><i class="fa fa-gamepad"></i></div>
+                    <div class="value">3</div>
+                    <div class="label">游戏总数</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="icon"><i class="fa fa-user"></i></div>
+                    <div class="value">18,260</div>
+                    <div class="label">玩家总数</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="icon"><i class="fa fa-user-plus"></i></div>
+                    <div class="value">156</div>
+                    <div class="label">今日新增</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="icon"><i class="fa fa-money"></i></div>
+                    <div class="value">¥68,520</div>
+                    <div class="label">总收入</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏列表 -->
+        <div class="fastadmin-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fa fa-list"></i> 游戏列表</span>
+                <a href="#" class="btn btn-sm btn-fastadmin"><i class="fa fa-plus"></i> 添加</a>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>图标</th>
+                            <th>游戏名称</th>
+                            <th>代号</th>
+                            <th>版本</th>
+                            <th>玩家数</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td style="font-size:24px;">🧠</td>
+                            <td>头脑特工队</td>
+                            <td><span class="badge badge-primary">VALHALLA</span></td>
+                            <td>v1.1.0</td>
+                            <td>12,580</td>
+                            <td><span class="badge badge-success">运行中</span></td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
+                                <a href="#" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td style="font-size:24px;">🧩</td>
+                            <td>益智拼图</td>
+                            <td><span class="badge badge-primary">PUZZLE</span></td>
+                            <td>v2.0.0</td>
+                            <td>5,680</td>
+                            <td><span class="badge badge-success">运行中</span></td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
+                                <a href="#" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td style="font-size:24px;">🃏</td>
+                            <td>卡牌对战</td>
+                            <td><span class="badge badge-primary">CARD</span></td>
+                            <td>v1.5.0</td>
+                            <td>0</td>
+                            <td><span class="badge badge-warning">未上线</span></td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
+                                <a href="#" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 最近日志 -->
+        <div class="fastadmin-card">
+            <div class="card-header">
+                <i class="fa fa-file-text"></i> 最近操作日志
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>时间</th>
+                            <th>操作人</th>
+                            <th>模块</th>
+                            <th>操作</th>
+                            <th>IP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2026-03-11 11:50</td>
+                            <td>admin</td>
+                            <td>游戏管理</td>
+                            <td>修改游戏配置</td>
+                            <td>127.0.0.1</td>
+                        </tr>
+                        <tr>
+                            <td>2026-03-11 11:45</td>
+                            <td>admin</td>
+                            <td>系统管理</td>
+                            <td>清除缓存</td>
+                            <td>127.0.0.1</td>
+                        </tr>
+                        <tr>
+                            <td>2026-03-11 11:30</td>
+                            <td>admin</td>
+                            <td>游戏管理</td>
+                            <td>新增游戏</td>
+                            <td>127.0.0.1</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 侧边栏折叠
+        $('.fastadmin-sidebar .nav-link').on('click', function() {
+            var $this = $(this);
+            var $submenu = $this.next('.submenu');
+            if ($submenu.length) {
+                $submenu.toggleClass('show');
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>
