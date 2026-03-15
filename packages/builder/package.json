@@ -1,0 +1,11 @@
+{
+  "name": "builder",
+  "version": "1.0.0",
+  "description": "Cocos Creator Builder",
+  "author": "Cocos Creator",
+  "main": "index.js",
+  "panel": {
+    "main": "panel/index.js",
+    "type": "all"
+  }
+}
