@@ -3,6 +3,9 @@
  * Cocos Creator 3.x
  */
 
+// 引入API模块
+var Api = require("Api");
+
 cc.Class({
     extends: cc.Component,
 
@@ -320,11 +323,46 @@ cc.Class({
 
     // ==================== Save/Load ====================
     saveGame: function() {
+        // 本地存档
         let saveData = JSON.stringify(this.gameData);
         cc.sys.localStorage.setItem("brainGameSave", saveData);
+        
+        // 云端存档 (如果已绑定玩家ID)
+        if (this.gameData.playerId) {
+            Api.saveGame(this.gameData.playerId, this.gameData, function(err, res) {
+                if (err) {
+                    cc.warn("云端存档失败: " + err);
+                } else {
+                    cc.log("云端存档成功!");
+                }
+            });
+        }
     },
 
     loadSave: function() {
+        // 优先加载云端存档
+        let playerId = cc.sys.localStorage.getItem("brainGamePlayerId");
+        if (playerId) {
+            Api.loadGame(playerId, function(err, res) {
+                if (!err && res && res.code === 0) {
+                    try {
+                        let cloudData = JSON.parse(res.data.game_data);
+                        Object.assign(this.gameData, cloudData);
+                        cc.log("云端存档加载成功!");
+                    } catch(e) {
+                        cc.warn("云端存档解析失败，尝试本地存档");
+                        this.loadLocalSave();
+                    }
+                } else {
+                    this.loadLocalSave();
+                }
+            }.bind(this));
+        } else {
+            this.loadLocalSave();
+        }
+    },
+
+    loadLocalSave: function() {
         let saveData = cc.sys.localStorage.getItem("brainGameSave");
         if (saveData) {
             try {
