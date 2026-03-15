@@ -1,0 +1,100 @@
+[
+  {
+    "__type__": "cc.SceneAsset",
+    "_name": "MainScene",
+    "_objFlags": 0,
+    "_native": "",
+    "scene": {
+      "__type__": "cc.Scene",
+      "_name": "MainScene",
+      "_objFlags": 0,
+      "_parent": null,
+      "_children": [
+        {
+          "__type__": "cc.Node",
+          "_name": "Main Camera",
+          "_objFlags": 0,
+          "_parent": null,
+          "_children": [],
+          "_active": true,
+          "_components": [
+            {
+              "__type__": "cc.Camera",
+              "_name": "",
+              "_objFlags": 0,
+              "projection": 0,
+              "priority": 0,
+              "fov": 45,
+              "fovAxis": 0,
+              "orthoHeight": 480,
+              "near": 1,
+              "far": 2000,
+              "color": {
+                "__type__": "cc.Color",
+                "r": 51,
+                "g": 51,
+                "b": 51,
+                "a": 255
+              },
+              "depth": 1,
+              "stencil": 0,
+              "clearFlags": 14,
+              "rect": {
+                "__type__": "cc.Rect",
+                "x": 0,
+                "y": 0,
+                "width": 1,
+                "height": 1
+              },
+              "aperture": 19,
+              "shutter": 7,
+              "iso": 0,
+              "screenScale": 1,
+              "visibility": 1108344832,
+              "targetTexture": null
+            }
+          ],
+          "_active": true,
+          "_scale": {
+            "__type__": "cc.Vec3",
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "_eulerAngles": {
+            "__type__": "cc.Vec3",
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "_layer": 1073741824,
+          "_position": {
+            "__type__": "cc.Vec3",
+            "x": 0,
+            "y": 0,
+            "z": 1000
+          },
+          "_rotation": {
+            "__type__": "cc.Quat",
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "_mat": [
+            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1000, 1
+          ],
+          "_worldMat": [
+            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1000, 1
+          ],
+          "_id": "c9DMICJLFO5IeO07EPon7U"
+        }
+      ],
+      "_active": true,
+      "_components": [],
+      "_preloadAssets": [],
+      "_id": "2d2f792f-a40c-49bb-a189-ed176a246e49"
+    },
+    "_id": "2d2f792f-a40c-49bb-a189-ed176a246e49"
+  }
+]

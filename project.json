@@ -1,0 +1,17 @@
+{
+  "creator": {
+    "version": "3.8.3"
+  },
+  "name": "brain-simulator",
+  "id": "brain-game-001",
+  "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "version": "3.8.3",
+  "isNew": false,
+  "compiler": {
+    "force": false,
+    "sourceMaps": true
+  },
+  "packages": {
+    "builder": {}
+  }
+}

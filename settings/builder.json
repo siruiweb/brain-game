@@ -1,0 +1,49 @@
+{
+  "android": {
+    "appABIs": ["armeabi-v7a", "arm64-v8a"],
+    "appBundle": false,
+    "encryptJs": true,
+    "exclude": {
+      "filter": [],
+      "subpackages": []
+    },
+    "minifyJs": true,
+    "nativeStyles": []
+  },
+  "ios": {
+    "appABIs": ["armeabi-v7a", "arm64-v8a"],
+    "appBundle": false,
+    "encryptJs": true,
+    "minifyJs": true,
+    "nativeStyles": []
+  },
+  "mac": {
+    "encryptJs": true,
+    "minifyJs": true
+  },
+  "web": {
+    "dest": "web-mobile",
+    "embedAssets": false,
+    "embedSpriteAtlas": false,
+    "encryptJs": true,
+    "md5Cache": true,
+    "minifyJs": true,
+    "optimizeHotUpdate": true,
+    "packAutoAtlas": true,
+    "polyfills": {
+      "promise": true
+    },
+    "prefetchScript": false,
+    "remoteUrl": "",
+    "server": "",
+    "sourceMaps": false,
+    "stripHotUpdate": false,
+    "tinyPackageMode": false,
+    "tinyPackageVersion": "1.0.0",
+    "useCommonJs": false
+  },
+  "win32": {
+    "encryptJs": true,
+    "minifyJs": true
+  }
+}
